@@ -23,7 +23,7 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState("");
   const [signupPassword, setSignupPassword] = useState("");
   const [signupFullName, setSignupFullName] = useState("");
-  const [signupRole, setSignupRole] = useState<"provider" | "staff">("staff");
+  const [signupRole, setSignupRole] = useState<"doctor" | "patient" | "healthcare_organization">("patient");
 
   if (user) {
     return <Navigate to="/dashboard" replace />;
@@ -75,7 +75,7 @@ const Auth = () => {
           <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary">
             <Activity className="h-10 w-10 text-primary-foreground" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight">HealthSync</h1>
+          <h1 className="text-3xl font-bold tracking-tight">MedicareX</h1>
           <p className="text-muted-foreground">Digital Health & Appointment Management</p>
         </div>
 
@@ -159,13 +159,14 @@ const Auth = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="signup-role">Role</Label>
-                    <Select value={signupRole} onValueChange={(value: "provider" | "staff") => setSignupRole(value)}>
+                    <Select value={signupRole} onValueChange={(value: "doctor" | "patient" | "healthcare_organization") => setSignupRole(value)}>
                       <SelectTrigger id="signup-role">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="staff">Staff</SelectItem>
-                        <SelectItem value="provider">Provider/Admin</SelectItem>
+                        <SelectItem value="doctor">Doctor</SelectItem>
+                        <SelectItem value="patient">Patient</SelectItem>
+                        <SelectItem value="healthcare_organization">Healthcare Organization</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
