@@ -151,7 +151,7 @@ ${val.trim()}`)
               Add Record
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Add New Medical Record</DialogTitle>
             </DialogHeader>
@@ -326,7 +326,7 @@ ${val.trim()}`)
       )}
 
       <Dialog open={!!selectedRecord} onOpenChange={() => setSelectedRecord(null)}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{selectedRecord?.title}</DialogTitle>
           </DialogHeader>

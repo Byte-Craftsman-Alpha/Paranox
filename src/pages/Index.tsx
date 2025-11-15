@@ -152,11 +152,11 @@ const Index = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Button size="lg" className="text-lg px-8" onClick={() => navigate("/auth?mode=signup")}>
-                Get Started Free
+                Get Started
               </Button>
-              <Button size="lg" variant="outline" className="text-lg px-8">
+              {/* <Button size="lg" variant="outline" className="text-lg px-8">
                 Watch Demo
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>
@@ -267,15 +267,15 @@ const Index = () => {
       <section className="py-20 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
-            <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Practice?</h2>
+            <h2 className="text-4xl font-bold mb-6">Tired of mealthcare hustle?</h2>
             <p className="text-xl text-muted-foreground mb-8">
-              Start your free trial today. No credit card required. Setup in minutes.
+              Step into modern and digital world of healthcare.
             </p>
             <Button size="lg" className="text-lg px-12" onClick={() => navigate("/auth?mode=signup")}>
-              Start Free Trial
+              Get Started
             </Button>
             <p className="mt-6 text-sm text-muted-foreground">
-              Join the modern healthcare revolution. Cancel anytime.
+              Join the modern healthcare revolution.
             </p>
           </div>
         </div>

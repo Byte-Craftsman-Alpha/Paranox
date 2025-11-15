@@ -63,7 +63,7 @@ const Auth = () => {
     } else {
       toast({
         title: "Account Created",
-        description: "Welcome to HealthSync!",
+        description: "Welcome to HealthCareX!",
       });
     }
 

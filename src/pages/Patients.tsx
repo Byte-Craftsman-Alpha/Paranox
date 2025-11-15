@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Pencil, Plus, Trash2 } from "lucide-react";
 import DashboardLayout from "@/components/DashboardLayout";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface Patient {
   id: string;
@@ -19,15 +20,18 @@ interface Patient {
   phone: string | null;
   email: string | null;
   notes: string | null;
+  created_by: string;
 }
 
 const Patients = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
+  const [role, setRole] = useState<string | null>(null);
 
   // Form state
   const [formData, setFormData] = useState({
@@ -39,14 +43,34 @@ const Patients = () => {
   });
 
   useEffect(() => {
-    loadPatients();
+    const init = async () => {
+      const { data: { user: current } } = await supabase.auth.getUser();
+      if (!current) return;
+      const { data } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", current.id)
+        .single();
+      const r = data?.role ?? null;
+      setRole(r);
+      if (r === "patient") {
+        navigate("/dashboard", { replace: true });
+        return;
+      }
+      await loadPatients();
+    };
+    init();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadPatients = async () => {
     try {
+      const { data: { user: current } } = await supabase.auth.getUser();
+      if (!current) return;
       const { data, error } = await supabase
         .from("patients")
-        .select("*")
+        .select("id, full_name, date_of_birth, phone, email, notes, created_by")
+        .eq("created_by", current.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -65,11 +89,15 @@ const Patients = () => {
     setLoading(true);
 
     try {
+      const { data: { user: current } } = await supabase.auth.getUser();
+      if (!current) throw new Error("Not authenticated");
+
       if (editingPatient) {
         const { error } = await supabase
           .from("patients")
           .update(formData)
-          .eq("id", editingPatient.id);
+          .eq("id", editingPatient.id)
+          .eq("created_by", current.id);
 
         if (error) throw error;
         
@@ -80,7 +108,7 @@ const Patients = () => {
       } else {
         const { error } = await supabase
           .from("patients")
-          .insert([{ ...formData, created_by: user?.id }]);
+          .insert([{ ...formData, created_by: current.id }]);
 
         if (error) throw error;
         
@@ -108,7 +136,14 @@ const Patients = () => {
     if (!confirm("Are you sure you want to delete this patient?")) return;
 
     try {
-      const { error } = await supabase.from("patients").delete().eq("id", id);
+      const { data: { user: current } } = await supabase.auth.getUser();
+      if (!current) throw new Error("Not authenticated");
+
+      const { error } = await supabase
+        .from("patients")
+        .delete()
+        .eq("id", id)
+        .eq("created_by", current.id);
 
       if (error) throw error;
 
@@ -169,7 +204,7 @@ const Patients = () => {
                 Add Patient
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
+            <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>
                   {editingPatient ? "Edit Patient" : "Add New Patient"}
