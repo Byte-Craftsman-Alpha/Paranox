@@ -155,3 +155,114 @@ CREATE TRIGGER update_medical_records_updated_at
 CREATE TRIGGER update_doctor_patients_updated_at
   BEFORE UPDATE ON public.doctor_patients
   FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Patient personal profile (private, consent-based)
+CREATE TABLE public.patient_profiles (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  phone TEXT,
+  address TEXT,
+  date_of_birth DATE,
+  blood_group TEXT,
+  insurance_id TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.patient_profiles ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Patients can view their own patient profile"
+  ON public.patient_profiles FOR SELECT
+  USING (auth.uid() = user_id);
+
+CREATE POLICY "Patients can manage their own patient profile"
+  ON public.patient_profiles FOR ALL
+  USING (auth.uid() = user_id);
+
+CREATE TRIGGER update_patient_profiles_updated_at
+  BEFORE UPDATE ON public.patient_profiles
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Patient emergency details (public for emergencies)
+CREATE TABLE public.patient_emergency_details (
+  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+  emergency_contact_name TEXT,
+  emergency_contact_phone TEXT,
+  emergency_contact_relationship TEXT,
+  allergies TEXT,
+  chronic_conditions TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.patient_emergency_details ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Emergency details are publicly readable"
+  ON public.patient_emergency_details FOR SELECT
+  USING (true);
+
+CREATE POLICY "Patients can manage their own emergency details"
+  ON public.patient_emergency_details FOR ALL
+  USING (auth.uid() = user_id);
+
+CREATE TRIGGER update_patient_emergency_details_updated_at
+  BEFORE UPDATE ON public.patient_emergency_details
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Patient consent for healthcare organizations
+CREATE TABLE public.patient_organization_access (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patient_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  organization_id UUID NOT NULL REFERENCES public.healthcare_organizations(id) ON DELETE CASCADE,
+  has_access BOOLEAN NOT NULL DEFAULT true,
+  granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  revoked_at TIMESTAMPTZ,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  UNIQUE(patient_id, organization_id)
+);
+
+ALTER TABLE public.patient_organization_access ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Patients can view their own organization access list"
+  ON public.patient_organization_access FOR SELECT
+  USING (auth.uid() = patient_id);
+
+CREATE POLICY "Patients can manage their own organization access"
+  ON public.patient_organization_access FOR ALL
+  USING (auth.uid() = patient_id);
+
+CREATE TRIGGER update_patient_organization_access_updated_at
+  BEFORE UPDATE ON public.patient_organization_access
+  FOR EACH ROW EXECUTE FUNCTION public.update_updated_at_column();
+
+-- Audit log of medical record access
+CREATE TABLE public.medical_record_access_logs (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  medical_record_id UUID NOT NULL REFERENCES public.medical_records(id) ON DELETE CASCADE,
+  accessed_by UUID NOT NULL REFERENCES auth.users(id),
+  accessed_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+  accessed_by_role app_role,
+  access_type TEXT,
+  context TEXT
+);
+
+ALTER TABLE public.medical_record_access_logs ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Patients can view access logs for their records"
+  ON public.medical_record_access_logs FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.medical_records
+      WHERE medical_records.id = medical_record_access_logs.medical_record_id
+      AND medical_records.patient_id = auth.uid()
+    )
+  );
+
+CREATE POLICY "Authenticated users can write access logs"
+  ON public.medical_record_access_logs FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.medical_records
+      WHERE medical_records.id = medical_record_access_logs.medical_record_id
+    )
+  );

@@ -1,8 +1,35 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Activity, CheckCircle, Clock, Shield, Users, Zap, X } from "lucide-react";
+import { Activity, CheckCircle, Clock, Moon, Shield, Sun, Users, Zap, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTheme } from "next-themes";
+
+const LandingThemeToggle = () => {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
+  const isDark = theme === "dark";
+
+  return (
+    <Button
+      type="button"
+      variant="outline"
+      size="icon"
+      className="rounded-full"
+      onClick={() => setTheme(isDark ? "light" : "dark")}
+      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+    </Button>
+  );
+};
 
 const Index = () => {
   const navigate = useNavigate();
@@ -79,15 +106,41 @@ const Index = () => {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-secondary/30 to-background">
-        <div className="container mx-auto px-4 py-20 md:py-32">
+      <section className="relative overflow-hidden border-b bg-background/80 backdrop-blur">
+        <div className="container mx-auto px-4 pt-8 pb-20 md:pt-10 md:pb-32">
+          <div className="flex items-center justify-between mb-10 rounded-full border border-border/60 bg-card/80 px-4 py-2 shadow-sm backdrop-blur">
+            <div className="flex items-center gap-2">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary">
+                <Activity className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <span className="text-xl font-bold">MedicareX</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <LandingThemeToggle />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => navigate("/auth?mode=login")}
+              >
+                Sign in
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="hidden sm:inline-flex"
+                onClick={() => navigate("/auth?mode=signup")}
+              >
+                Sign up
+              </Button>
+            </div>
+          </div>
+
           <div className="flex flex-col items-center text-center">
             <div className="flex justify-center mb-6">
               <div className="flex h-24 w-24 items-center justify-center rounded-2xl bg-primary shadow-2xl">
                 <Activity className="h-14 w-14 text-primary-foreground" />
               </div>
             </div>
-            
             <h1 className="mb-6 text-5xl md:text-7xl font-bold tracking-tight bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
               MedicareX
             </h1>
@@ -97,9 +150,8 @@ const Index = () => {
             <p className="mb-8 text-lg text-muted-foreground max-w-2xl">
               Transform your medical practice with an intelligent, secure, and easy-to-use platform that puts patient care first.
             </p>
-            
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="lg" className="text-lg px-8" onClick={() => navigate("/auth")}>
+              <Button size="lg" className="text-lg px-8" onClick={() => navigate("/auth?mode=signup")}>
                 Get Started Free
               </Button>
               <Button size="lg" variant="outline" className="text-lg px-8">
@@ -111,7 +163,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-secondary/30">
+      <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Powerful Features for Modern Healthcare</h2>
@@ -122,7 +174,7 @@ const Index = () => {
             {features.map((feature, index) => {
               const Icon = feature.icon;
               return (
-                <div key={index} className="bg-card rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow border border-border">
+                <div key={index} className="bg-card/80 rounded-2xl p-6 shadow-sm hover:shadow-lg transition-shadow border border-border/70 backdrop-blur-sm">
                   <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 mb-4">
                     <Icon className="h-6 w-6 text-primary" />
                   </div>
@@ -144,7 +196,7 @@ const Index = () => {
           </div>
 
           <div className="max-w-5xl mx-auto overflow-x-auto">
-            <div className="bg-card rounded-xl shadow-2xl border border-border overflow-hidden">
+            <div className="bg-card/90 rounded-2xl shadow-xl border border-border/70 overflow-hidden backdrop-blur-sm">
               <table className="w-full">
                 <thead>
                   <tr className="bg-secondary/50">
@@ -185,7 +237,7 @@ const Index = () => {
       </section>
 
       {/* Benefits Section */}
-      <section className="py-20 bg-gradient-to-b from-secondary/30 to-background">
+      <section className="py-20 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
@@ -212,14 +264,14 @@ const Index = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-primary/5">
+      <section className="py-20 bg-muted/20">
         <div className="container mx-auto px-4">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Practice?</h2>
             <p className="text-xl text-muted-foreground mb-8">
               Start your free trial today. No credit card required. Setup in minutes.
             </p>
-            <Button size="lg" className="text-lg px-12" onClick={() => navigate("/auth")}>
+            <Button size="lg" className="text-lg px-12" onClick={() => navigate("/auth?mode=signup")}>
               Start Free Trial
             </Button>
             <p className="mt-6 text-sm text-muted-foreground">

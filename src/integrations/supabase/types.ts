@@ -236,6 +236,135 @@ export type Database = {
         }
         Relationships: []
       }
+      medical_record_access_logs: {
+        Row: {
+          accessed_at: string
+          accessed_by: string
+          accessed_by_role: Database["public"]["Enums"]["app_role"] | null
+          access_type: string | null
+          context: string | null
+          id: string
+          medical_record_id: string
+        }
+        Insert: {
+          accessed_at?: string
+          accessed_by: string
+          accessed_by_role?: Database["public"]["Enums"]["app_role"] | null
+          access_type?: string | null
+          context?: string | null
+          id?: string
+          medical_record_id: string
+        }
+        Update: {
+          accessed_at?: string
+          accessed_by?: string
+          accessed_by_role?: Database["public"]["Enums"]["app_role"] | null
+          access_type?: string | null
+          context?: string | null
+          id?: string
+          medical_record_id?: string
+        }
+        Relationships: []
+      }
+      patient_emergency_details: {
+        Row: {
+          allergies: string | null
+          chronic_conditions: string | null
+          created_at: string
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allergies?: string | null
+          chronic_conditions?: string | null
+          created_at?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allergies?: string | null
+          chronic_conditions?: string | null
+          created_at?: string
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      patient_organization_access: {
+        Row: {
+          created_at: string
+          granted_at: string
+          has_access: boolean
+          id: string
+          organization_id: string
+          patient_id: string
+          revoked_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          granted_at?: string
+          has_access?: boolean
+          id?: string
+          organization_id: string
+          patient_id: string
+          revoked_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          granted_at?: string
+          has_access?: boolean
+          id?: string
+          organization_id?: string
+          patient_id?: string
+          revoked_at?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      patient_profiles: {
+        Row: {
+          address: string | null
+          blood_group: string | null
+          created_at: string
+          date_of_birth: string | null
+          insurance_id: string | null
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          address?: string | null
+          blood_group?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          insurance_id?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          address?: string | null
+          blood_group?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          insurance_id?: string | null
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       patients: {
         Row: {
           created_at: string

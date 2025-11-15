@@ -7,13 +7,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Navigate } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 import { Activity } from "lucide-react";
 
 const Auth = () => {
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [searchParams] = useSearchParams();
+  const initialTab = searchParams.get("mode") === "signup" ? "signup" : "login";
 
   // Login form state
   const [loginEmail, setLoginEmail] = useState("");
@@ -69,23 +71,23 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-secondary/30 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-muted/30 p-4">
       <div className="w-full max-w-md space-y-6">
         <div className="flex flex-col items-center space-y-2 text-center">
-          <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary/90 shadow-lg backdrop-blur-sm">
             <Activity className="h-10 w-10 text-primary-foreground" />
           </div>
           <h1 className="text-3xl font-bold tracking-tight">MedicareX</h1>
           <p className="text-muted-foreground">Digital Health & Appointment Management</p>
         </div>
 
-        <Card>
+        <Card className="border border-border/70 bg-card/85 backdrop-blur-sm shadow-lg">
           <CardHeader>
             <CardTitle>Welcome</CardTitle>
             <CardDescription>Sign in to your account or create a new one</CardDescription>
           </CardHeader>
           <CardContent>
-            <Tabs defaultValue="login" className="w-full">
+            <Tabs defaultValue={initialTab} className="w-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
