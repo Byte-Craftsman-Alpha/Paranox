@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      academic_records: {
+        Row: {
+          certificate_url: string | null
+          created_at: string
+          degree_name: string
+          doctor_id: string
+          id: string
+          institution: string
+          year_obtained: number
+        }
+        Insert: {
+          certificate_url?: string | null
+          created_at?: string
+          degree_name: string
+          doctor_id: string
+          id?: string
+          institution: string
+          year_obtained: number
+        }
+        Update: {
+          certificate_url?: string | null
+          created_at?: string
+          degree_name?: string
+          doctor_id?: string
+          id?: string
+          institution?: string
+          year_obtained?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "academic_records_doctor_id_fkey"
+            columns: ["doctor_id"]
+            isOneToOne: false
+            referencedRelation: "doctor_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       appointments: {
         Row: {
           appointment_date: string
@@ -54,6 +92,149 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      doctor_patients: {
+        Row: {
+          admission_date: string
+          created_at: string
+          discharge_date: string | null
+          doctor_id: string
+          id: string
+          notes: string | null
+          patient_id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          admission_date: string
+          created_at?: string
+          discharge_date?: string | null
+          doctor_id: string
+          id?: string
+          notes?: string | null
+          patient_id: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          admission_date?: string
+          created_at?: string
+          discharge_date?: string | null
+          doctor_id?: string
+          id?: string
+          notes?: string | null
+          patient_id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      doctor_profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          healthcare_organization_id: string | null
+          id: string
+          specialization: string | null
+          updated_at: string
+          user_id: string
+          years_of_experience: number | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          healthcare_organization_id?: string | null
+          id?: string
+          specialization?: string | null
+          updated_at?: string
+          user_id: string
+          years_of_experience?: number | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          healthcare_organization_id?: string | null
+          id?: string
+          specialization?: string | null
+          updated_at?: string
+          user_id?: string
+          years_of_experience?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "doctor_profiles_healthcare_organization_id_fkey"
+            columns: ["healthcare_organization_id"]
+            isOneToOne: false
+            referencedRelation: "healthcare_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      healthcare_organizations: {
+        Row: {
+          address: string | null
+          contact_info: string | null
+          created_at: string
+          id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          contact_info?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          contact_info?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      medical_records: {
+        Row: {
+          created_at: string
+          description: string | null
+          doctor_id: string | null
+          file_url: string | null
+          id: string
+          patient_id: string
+          record_date: string
+          record_type: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          doctor_id?: string | null
+          file_url?: string | null
+          id?: string
+          patient_id: string
+          record_date: string
+          record_type?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          doctor_id?: string | null
+          file_url?: string | null
+          id?: string
+          patient_id?: string
+          record_date?: string
+          record_type?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       patients: {
         Row: {
